@@ -54,7 +54,7 @@ namespace raft
         int key() const { return m_id; }
         bool IsLeader() const { return m_state == State::Leader; }
         int Term() const { return m_term; }
-        State State() const { return m_state; }
+        State GetState() const { return m_state; }
         bool IsStop() const { return m_is_stop; }
         const std::vector<Log> &LogVec() const { return m_log_vec; }
         const std::vector<Log> ApplyLogVec();

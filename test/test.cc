@@ -123,7 +123,7 @@ int main()
             break;
         }
     }
-    std::this_thread::sleep_for(std::chrono::seconds(10));
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 
     // 超过一半的服务器掉线，无法完成日志同步
     print->AddPrint("\n\nTest->Add Log");

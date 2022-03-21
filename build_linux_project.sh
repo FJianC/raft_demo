@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION="Debug"
-if [ "$1"x == "release"x ]; then
+if [ "$1" = "release" ]; then
     $VERSION="Release"
 fi
 

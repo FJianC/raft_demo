@@ -2,6 +2,8 @@
 
 #include <assert.h>
 #include <random>
+#include <sstream>
+#include <algorithm>
 
 #define PRINT(...) PrintOutput(m_factory, m_id, __func__, ##__VA_ARGS__)
 template <typename T>
@@ -17,7 +19,7 @@ void PrintOutput(std::shared_ptr<raft::objfactory<raft::server>> factory, int id
 {
     auto server = factory->Get(id, factory);
     std::ostringstream o;
-    osspack(o, "(", id, " ", server->Term(), " ", (int)server->State(), ") ", func, "->", std::forward<Args>(args)...);
+    osspack(o, "(", id, " ", server->Term(), " ", (int)server->GetState(), ") ", func, "->", std::forward<Args>(args)...);
     factory->Get(0, factory)->AddPrint(o.str());
 }
 
@@ -82,7 +84,7 @@ void raft::server::Stop()
 {
     std::unique_lock<std::mutex> _(m_mutex);
     m_is_stop = true;
-    PRINT();
+    PRINT("");
 }
 
 void raft::server::ReStart()
@@ -103,7 +105,7 @@ void raft::server::ReStart()
 
     m_next_index_vec.clear();
     m_match_index_vec.clear();
-    PRINT();
+    PRINT("");
 }
 
 void raft::server::Update()
@@ -200,7 +202,7 @@ void raft::server::Election()
         // 随机计时器
         std::random_device rd;
         std::default_random_engine eng(rd());
-        std::uniform_int_distribution dist(100, 300);
+        std::uniform_int_distribution<int> dist(100, 300);
         const auto &sleep = dist(eng);
         PRINT("sleep:", sleep);
         std::this_thread::sleep_for(std::chrono::milliseconds(sleep));
@@ -392,7 +394,7 @@ void raft::server::ReplyAppendEntries(const AppendEntriesReply &reply)
         }
 
         if (reply.log_count > 0)
-            PRINT("add_log ", reply.id, " ", m_match_index_vec[reply.id], " ", m_next_index_vec[reply.id], " count:", reply.log_count);
+            PRINT("succ ", reply.id, " ", m_match_index_vec[reply.id], " ", m_next_index_vec[reply.id], " count:", reply.log_count);
 
         // 添加成功，更新跟随者的提交进度和同步进度
         m_match_index_vec[reply.id] = std::max(m_match_index_vec[reply.id], m_next_index_vec[reply.id] + reply.log_count - 1);
@@ -429,7 +431,7 @@ void raft::server::ToLeader()
     }
 
     m_log_vec.push_back(Log{(int)m_log_vec.size(), m_term, true, "ToLeader:" + std::to_string(m_id)});
-    PRINT();
+    PRINT("");
 }
 
 void raft::server::ToFollower(int term, int votedfor)
@@ -439,7 +441,7 @@ void raft::server::ToFollower(int term, int votedfor)
     m_vote_count = 0;
     m_term = term;
     m_votedfor = votedfor;
-    PRINT();
+    PRINT("");
 }
 
 void raft::server::Print()
