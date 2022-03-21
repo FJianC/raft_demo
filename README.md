@@ -171,19 +171,19 @@ Raft两阶段成员变更过程如下：
 4. Leader只要开始同步新成员配置，即可开始使用新的成员配置进行日志同步。
 
 ## Raft算法总结
-Raft算法各节点维护的状态：
+Raft算法各节点维护的状态：  
 ![图 11 ](./images/var_1.jpg)
 
-Leader选举：
+Leader选举：  
 ![图 12 ](./images/var_2.jpg)
 
-日志同步：
+日志同步：  
 ![图 13 ](./images/var_5.jpg)
 
-Raft状态机：
+Raft状态机：  
 ![图 14 ](./images/var_4.jpg)
 
-安装snapshot：
+安装snapshot：  
 ![图 15 ](./images/var_3.jpg)
 
 ## 资源参考链接
