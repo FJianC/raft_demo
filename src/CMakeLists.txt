@@ -1,0 +1,38 @@
+include_directories(${THIRD_LIB_INC_DIR})
+
+file(GLOB SRC_CPP "${Lib_SRC_DIR}/*cc" "${Lib_SRC_DIR}/*cpp")
+file(GLOB SRC_H "${Lib_SRC_DIR}/*h")
+file(GLOB SRC_H "${Lib_INC_DIR}/*h")
+
+set(ALLFILES ${SRC_CPP} ${SRC_H} ${INC_H})
+
+macro(source_group_by_dir source_files)
+    if(MSVC)
+        set(sgbd_cur_dir ${CMAKE_CURRENT_SOURCE_DIR})
+        foreach(sgbd_file ${${source_files}})
+            string(REGEX REPLACE ${sgbd_cur_dir}/\(.*\) \\1 sgbd_fpath ${sgbd_file})
+            string(REGEX REPLACE "\(.*\)/.*" \\1 sgbd_group_name ${sgbd_fpath})
+            string(COMPARE EQUAL ${sgbd_fpath} ${sgbd_group_name} sgbd_nogroup)
+            string(REPLACE "/" "\\" sgbd_group_name ${sgbd_group_name})
+            if(sgbd_nogroup)
+                set(sgbd_group_name "\\")
+            endif(sgbd_nogroup)
+            source_group(${sgbd_group_name} FILES ${sgbd_file})
+        endforeach(sgbd_file)
+    endif(MSVC)
+endmacro(source_group_by_dir)
+
+message(STATUS "all files")
+foreach(file IN LISTS ALLFILES)
+    message(STATUS ${file})
+endforeach(file)
+source_group_by_dir(ALLFILES)
+
+if(MSVC)
+    add_definitions(-DWINDOWS)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif(MSVC)
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${PRO_LIB_DIR})
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${PRO_LIB_DIR})
+add_library(${PRO_LIB_NAME} STATIC ${ALLFILES})
